@@ -70,7 +70,7 @@ class Graph {
     Graph(int v) {
         V = v;
         adj = new LinkedList[v];
-        for(int i=0; i < v ++i);    // 인접 리스트 초기화
+        for(int i=0; i < v ++i)    // 인접 리스트 초기화
             adj[i] = new LinkedList();
     }
 
@@ -137,7 +137,7 @@ public static void main(String args[]) {
 }
 ```
 
-**깊이 우선 탐색(DFS)의 시간 복잡도**
+**`깊이 우선 탐색(DFS)의 시간 복잡도`**
 - DFS는 그래프(정점의 수:N, 간선의 수: E)의 모든 간선을 조회한다.
     - 인접 리스트로 표현된 그래프: O(N+E)
     - 인접 행렬로 표현된 그래프 : O(N^2)
