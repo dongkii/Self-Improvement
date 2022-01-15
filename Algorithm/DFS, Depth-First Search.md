@@ -70,7 +70,7 @@ class Graph {
     Graph(int v) {
         V = v;
         adj = new LinkedList[v];
-        for(int i=0; i < v ++i)    // 인접 리스트 초기화
+        for(int i=0; i < v; ++i)    // 인접 리스트 초기화
             adj[i] = new LinkedList();
     }
 
