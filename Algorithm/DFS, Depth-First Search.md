@@ -19,7 +19,7 @@
 **깊이 우선 탐색(DFS)의 과정**
 
 ![DFS_Process](
-    ../img/DFS_Process.PNG)
+/img/DFS_Process.PNG)
 1. 0노드(시작노드)를 방문한다.
     - 방문한 노드는 방문했다고 표시한다.
 2. 0과 인접한 노드들을 차례로 순회한다.
