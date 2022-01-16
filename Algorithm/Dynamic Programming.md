@@ -117,3 +117,130 @@ DP는 현재 변수에 따라 그 결과 값을 찾고 그것을 전달하여 �
 
 **`1) Bottom-Up(Tabulation 방식) - 반복문 사용`**  
 **`2) Top-Down (Memoization 방식) - 재귀 사용`**
+
+> **구현 방법**
+
+**1) Bottom-Up 방식**  
+이름에서 보이듯이, `아래에서부터 계산을 수행하고 누적시켜서 전체 큰 문제를 해결하는 방식`이다.
+
+메로를 위해서 dp라는 배열을 만들었고 이것이 1차원이라 가정했을 때, dp[0]가 기저 상태이고 dp[n]을 목표 상태라고 하자.  
+Bottom-Up은 dp[0]부터 시작하여 반복문을 통해 점화식으로 결과를 내서 dp[n]까지 그 값을 전이시켜 재활용하는 방식이다.
+
+반복을 통해 dp[0]부터 하나 하나씩 채우는 과정을 `"table-filling"` 이라고 하며, Table에 저장된 값에 직접 접근하여 재활용하므로 **`Tabulation`**이라는 명칭이 붙었다고 한다.
+
+사실상 근본적인 개념은 결과값을 기억하고 재활용한다는 측면에서 메모하기(Memoization)와 크게 다르지 않다.
+
+**2) Top-Down 방식**  
+이는 dp[0]의 기저 상태에서 출발하는 대신 dp[n]의 값을 찾기 위해 `위에서 부터 바로 호출을 시작`하여 dp[0]의 상태까지 내려간 다음 해당 `결과 값을 재귀를 통해 전이시켜 재활용하는 방식`이다.
+
+피보나치의 예시처럼, f(n) = f(n-1) + f(n-2)의 과정에서 함수 호출 트리의 과정에서 보이듯, n = 5 일때,  f(3), f(2)의 동일한 계산이 반복적으로 나오게 된다.
+
+이 때, 이미 이전에 계산을 완료한 경우에는 단순히 메모리에 저장되어 있던 내역을 꺼내서 활용하면 된다. 그래서 가장 최근의 상태 값을 메모해 두었다고 하여 `Memoization`이라고 부른다.
+
+위 방법을 코드를 통해서 더 직관적으로 이해해보자. (아래에서는 숫자 크기를 감안해 30번째 피보나치 수열 계산)
+
+
+```java
+public class Fibonacci {
+    // DP를 사용 시 작은 문제의 결과값을 저장하는 배열
+    // Top-Down, Bottom-Up 별개로 생성
+    static int[] topDown_memo;
+    static int[] bottomup_table;
+
+    public static void main(String[] args) {
+        int n  = 30;
+        topDown_memo = new int[n+1];
+        bottomuip_table = new int[n+1];
+
+        long startTime = System.currentTimeMillis();
+        System.out.println(nativeRecursion(n));
+        long endTime = System.currentTimeMillis();
+        System.out.println("일반 재귀 소요 시간 : " + (endTime - startTime));
+
+        System.out.println();
+
+        startTime = System.currentTimeMillis();
+        System.out.println(topDown(n));
+        endTime = System.currentTimeMillis();
+        System.out.println("Top-Down DP 소요 시간 : " + (endTime - startTime));
+
+        System.out.println();
+
+        startTime = System.currentTimeMillis();
+        System.out.println(bottomUp(n));
+        endTime = System.currentTimeMillis();
+        System.out.println("Bottom-Up DP 소요 시간 : " + (endTime - startTime));
+    }
+
+    // 단순 재귀를 통해 Fibonacci를 구하는 경우
+    // 동일한 계산을 반복하여 비효율적으로 처리가 수행됨
+    public static int nativeRecursion(int n) {
+        int(n <= 1) {
+            return n;
+        }
+
+        return nativeRecursion(n-1) + nativeRecursion(n-2);
+    }
+
+    // DP Top-Down을 사용해 Fibonacci를 구하는 경우
+    public static int topDown(int n) {
+        // 기저 상태 도달 시, 0, 1로 초기화
+        if(n < 2) {
+            return topDown_memo[n] = n;
+        }
+
+        // 메모에 계산된 값이 있으면 바로 반환
+        if(topDown_memo[n] > 0) {
+            return topDown_memo[n];
+        }
+
+        // 재귀를 사용
+        topDown_memo[n] = topDown(n-1) + topDown(n-2);
+
+        return topDown_memo[n];
+    }
+
+    // DP Bottom-Up을 사용해 Fibonacci를 구하는 경우
+    public static int bottomUp(int n) {
+        // 기저 상태의 경우 사전에 미리 저장
+        bottomup_table[0] = 0;
+        bottomup_table[1] = 1;
+
+        // 반복문을 사용
+        for(int i = 2; i <= n; i++) {
+            // Table 을 채워나감
+            bottomup_table[i] = bottomup_table[i-1] + bottomup_table[i-2];
+        }
+
+        return bottomup_table[n];
+    }
+}
+```
+
+```java
+/*
+결과
+832040
+일반 재귀 소요 시간 : 9
+
+832040
+Top-Down DP 소요 시간 : 0
+
+832040
+Bottom-Up DP 소요 시간 : 0
+*/
+```
+
+
+> **5. 기타 내용**
+
+**`두 가지 방법(Top-Down vs Bottom-Up) 중 더 나은 것이 있는지, 하나만 가능한 경우가 있는지?`**  
+두 방법 중 어느것이 시간적으로 효율이 있는지 묻는 데 그 답은 `'알 수 없다.'` 실제로 재귀는 내부 스택을 만들고 함수를 호출하는 과정이 더 있어보여서 반복이 더 빠를 것 같다고 느낄 수 있다.
+
+하지만, Top-Down을 통해 문제를 풀어가는 경우에는 점화식에 따라 불 필요한 계산을 오히려 Bottom-Up보다 덜하는 경우가 있기 때문에 궁극적으로는 알 수 없다.(이 경우는 추후 문제를 풀어가며 그 경우를 찾아 본다.)
+
+그 외, Top-Down은 재귀를 통해 내려가니까 Stack이 쌓여 'StackOverflow 같은 에러가 발생하지 않느냐'라고 하는데, 우리가 해결해야 하는 수준의 문제에서는 그러한 경우는 거의 없다.
+
+```
+자료 출처 : https://hongjw1938.tistory.com/47
+```
