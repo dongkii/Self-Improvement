@@ -6,10 +6,10 @@ import org.omg.Messaging.SyncScopeHelper;
 
 public class Programmers_Report_results {
     public static int[] solution(String[] id_list, String[] report, int k) {
-        /// ÀÌ¿ëÀÚÀÇ ID ¹è¿­
-        // Á¤Áö ±âÁØÀÌ µÇ´Â ½Å°íÈ½¼ö k
-        // °¢ ÀÌ¿ëÀÚ°¡ ½Å°íÇÑ ÀÌ¿ëÀÚÀÇ IDÁ¤º¸°¡ ´ã±ä ¹è¿­
-    	// report ¹è¿­Àº "À¯Àúid ½Å°íÀÚid" Çü½Ä
+        /// ì´ìš©ìì˜ ID ë°°ì—´
+        // ì •ì§€ ê¸°ì¤€ì´ ë˜ëŠ” ì‹ ê³ íšŸìˆ˜ k
+        // ê° ì´ìš©ìê°€ ì‹ ê³ í•œ ì´ìš©ìì˜ IDì •ë³´ê°€ ë‹´ê¸´ ë°°ì—´
+    	// report ë°°ì—´ì€ "ìœ ì €id ì‹ ê³ ìid" í˜•ì‹
         int[] answer = {2, 1, 1, 1};
         
         HashSet<String> set = new HashSet<String>();
@@ -21,7 +21,7 @@ public class Programmers_Report_results {
     }
 
     public static void main(String[] args) {
-    	System.out.println("½ÇÇà ½ÃÀÛ");
+    	System.out.println("ì‹¤í–‰ ì‹œì‘");
     	
     	String[] id_list = {"muzi", "frodo", "apeach", "neo"};
         String[] report = {"muzi frodo","apeach frodo","frodo neo","muzi neo","apeach muzi"};
@@ -33,7 +33,7 @@ public class Programmers_Report_results {
         int[] result2 = {0, 0};
         result(solution(id_list2, report2, 3), result2, 2);
         
-        System.out.println("½ÇÇà Á¾·á");
+        System.out.println("ì‹¤í–‰ ì¢…ë£Œ");
     }
     
     public static void result(int[] result, int[] answer, int num) {
@@ -46,9 +46,9 @@ public class Programmers_Report_results {
         }
         
         if(i == answer.length) {
-        	resultMsg = num + " : ¼º°ø";
+        	resultMsg = num + " : ì„±ê³µ";
         } else {
-        	resultMsg = num + " : ½ÇÆĞ";
+        	resultMsg = num + " : ì‹¤íŒ¨";
         }
         
         System.out.println(resultMsg);
