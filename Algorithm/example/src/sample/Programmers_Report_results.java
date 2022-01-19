@@ -2,19 +2,50 @@ package sample;
 
 import java.util.*;
 
-import org.omg.Messaging.SyncScopeHelper;
-
 public class Programmers_Report_results {
     public static int[] solution(String[] id_list, String[] report, int k) {
         /// 이용자의 ID 배열
         // 정지 기준이 되는 신고횟수 k
         // 각 이용자가 신고한 이용자의 ID정보가 담긴 배열
     	// report 배열은 "유저id 신고자id" 형식
-        int[] answer = {2, 1, 1, 1};
         
-        HashSet<String> set = new HashSet<String>();
-        for(int i=0; i<report.length; i++) {
-        	set.add(report[i]);
+        // 풀이
+        // 신고 리스트를 셋으로 전환 (중복을 제거하기 위해)
+        Set<String> set = new HashSet<String>(Arrays.asList(report));
+
+        // 중복이 제거된 셋을 다시 배열로 전환
+        String[] report_ = set.toArray(new String[0]);
+
+        int[] reportCnt = new int[id_list.length];  // 신고당한 횟수 카운트용
+        int[] answer = new int[id_list.length];     // 결과
+        String[] result = new String[id_list.length];   // 신고한 사람 카운트용
+
+        // 신고한 id의 카운트를 세기위한 이중포문
+        for(int i = 0; i < id_list.length; i++) {
+            for(int j = 0; j < report_.length; j++) {
+                if(id_list[i].equals(report_[j].split(" ")[1])) {   // 신고한id의 인덱스를 구하기위해
+                    reportCnt[i] += 1;      // 신고당한id 카운트
+                    
+                    // 신고한 사람을 저장
+                    if(result[i] == null) {
+                        result[i] = report_[j].split(" ")[0];
+                    } else {
+                        result[i] += " " + report_[j].split(" ")[0];
+                    }
+                }
+            }
+        }
+
+        for(int t = 0; t < id_list.length; t++) {
+            if(reportCnt[t] >= k) {
+                for(int q = 0; q < result[t].split(" ").length; q++) {
+                    for(int w = 0; w < id_list.length; w++) {
+                        if(id_list[w].equals(result[t].split(" ")[q])) {
+                            answer[w] += 1;
+                        }
+                    }
+                }
+            }
         }
         
         return answer;
@@ -41,8 +72,8 @@ public class Programmers_Report_results {
     	int i = 0;
         for(i = 0; i < answer.length; i++) {
         	if(result[i] != answer[i]) {
-        		break;
-        	}
+                break;
+            }
         }
         
         if(i == answer.length) {
