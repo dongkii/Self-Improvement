@@ -9,44 +9,40 @@ public class Programmers_Report_results {
         // 각 이용자가 신고한 이용자의 ID정보가 담긴 배열
     	// report 배열은 "유저id 신고자id" 형식
         
-        // 풀이
-        // 신고 리스트를 셋으로 전환 (중복을 제거하기 위해)
-        Set<String> set = new HashSet<String>(Arrays.asList(report));
-
-        // 중복이 제거된 셋을 다시 배열로 전환
-        String[] report_ = set.toArray(new String[0]);
-
-        int[] reportCnt = new int[id_list.length];  // 신고당한 횟수 카운트용
-        int[] answer = new int[id_list.length];     // 결과
-        String[] result = new String[id_list.length];   // 신고한 사람 카운트용
-
-        // 신고한 id의 카운트를 세기위한 이중포문
-        for(int i = 0; i < id_list.length; i++) {
-            for(int j = 0; j < report_.length; j++) {
-                if(id_list[i].equals(report_[j].split(" ")[1])) {   // 신고한id의 인덱스를 구하기위해
-                    reportCnt[i] += 1;      // 신고당한id 카운트
-                    
-                    // 신고한 사람을 저장
-                    if(result[i] == null) {
-                        result[i] = report_[j].split(" ")[0];
-                    } else {
-                        result[i] += " " + report_[j].split(" ")[0];
-                    }
-                }
-            }
-        }
-
-        for(int t = 0; t < id_list.length; t++) {
-            if(reportCnt[t] >= k) {
-                for(int q = 0; q < result[t].split(" ").length; q++) {
-                    for(int w = 0; w < id_list.length; w++) {
-                        if(id_list[w].equals(result[t].split(" ")[q])) {
-                            answer[w] += 1;
-                        }
-                    }
-                }
-            }
-        }
+    	int[] answer = new int[id_list.length];     // 결과
+    	
+    	Map<String, HashSet<String>> reportList = new HashMap<String, HashSet<String>>();
+    	Map<String, Integer> mailCount = new HashMap<String, Integer>();
+    	
+    	// 중복제거
+    	Set<String> set = new HashSet<String>(Arrays.asList(report));
+    	report = set.toArray(new String[0]);
+    	
+    	//신고 리스트 및 메일카운트 초기화
+    	for(String user : id_list) {
+    		mailCount.put(user, 0);
+    		reportList.put(user, new HashSet<String>());
+    	}
+    	
+    	// 신고당한ID[신고한ID, 신고한ID, ,,,]
+    	for(String rept : report) {
+    		String[] tmp = rept.split(" ");
+    		reportList.get(tmp[1]).add(tmp[0]);
+    	}
+    	
+    	
+    	//  
+    	for(int i = 0; i < id_list.length; i++) {
+    		if(reportList.get(id_list[i]).size() >= k) {
+    			for(String b : reportList.get(id_list[i])) {
+    				mailCount.put(b, mailCount.get(b)+1);
+    			}
+    		}
+    	}
+    	
+    	for(int j = 0; j < id_list.length; j++) {
+    		answer[j] = mailCount.get(id_list[j]);
+    	}
         
         return answer;
     }
@@ -56,7 +52,7 @@ public class Programmers_Report_results {
     	
     	String[] id_list = {"muzi", "frodo", "apeach", "neo"};
         String[] report = {"muzi frodo","apeach frodo","frodo neo","muzi neo","apeach muzi"};
-        int[] result1 = {2, 1, 1, 1};
+        int[] result1 = {2, 1, 1, 0};
         result(solution(id_list, report, 2), result1, 1);
         
         String[] id_list2 = {"con", "ryan"};
