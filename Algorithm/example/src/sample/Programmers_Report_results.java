@@ -49,16 +49,9 @@ public class Programmers_Report_results {
 
     public static void main(String[] args) {
     	System.out.println("실행 시작");
-    	
-    	String[] id_list = {"muzi", "frodo", "apeach", "neo"};
-        String[] report = {"muzi frodo","apeach frodo","frodo neo","muzi neo","apeach muzi"};
-        int[] result1 = {2, 1, 1, 0};
-        result(solution(id_list, report, 2), result1, 1);
-        
-        String[] id_list2 = {"con", "ryan"};
-        String[] report2 = {"ryan con", "ryan con", "ryan con", "ryan con"};
-        int[] result2 = {0, 0};
-        result(solution(id_list2, report2, 3), result2, 2);
+        result(solution(new String[] {"muzi", "frodo", "apeach", "neo"}, new String[] {"muzi frodo","apeach frodo","frodo neo","muzi neo","apeach muzi"}, 2), new int[] {2, 1, 1, 0}, 1);
+
+        result(solution(new String[] {"con", "ryan"}, new String[] {"ryan con", "ryan con", "ryan con", "ryan con"}, 3), new int[] {0, 0}, 2);
         
         System.out.println("실행 종료");
     }
