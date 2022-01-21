@@ -19,13 +19,14 @@ public class Programmers_String_zip {
         	if(mod == 0) {
         		String prevStr = ""; 	// 값 비교를 위한 스트링
         		int j = 0;
-        		while(j < share) {        		
-        			String strTmp = s.substring(j, j+i);
+        		while(j < share) {
+        			int tp = j+i;
+        			String strTmp = s.substring(j, tp);
         			if(st.size() == 0 || prevStr.equals(strTmp)) {
         				st.push(strTmp);
         			} else {
         				if(st.size() == 1) {
-        					result+=st.pop();
+        					result += st.pop();
         				} else {
         					result += st.size() + st.pop();
         				}
@@ -34,7 +35,6 @@ public class Programmers_String_zip {
         				st.push(strTmp);
         			}
         			prevStr = strTmp;
-        			j+=i;
         		}
         		
     		    if(st.size() == 1) {
