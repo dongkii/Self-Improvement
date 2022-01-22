@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Programmers_String_zip {
 	public static int solution(String s) {
-		System.out.println("ÀÔ·Â°ª : \"" + s + "\" ¹®ÀÚ¿­ ±æÀÌ : " + s.length());
+		System.out.println("ì…ë ¥ê°’ : \"" + s + "\" ë¬¸ìì—´ ê¸¸ì´ : " + s.length());
 		
 		List<Integer> list = new ArrayList<Integer>(); 
 		
@@ -17,7 +17,7 @@ public class Programmers_String_zip {
         	String result = "";
         	
         	if(mod == 0) {
-        		String prevStr = ""; 	// °ª ºñ±³¸¦ À§ÇÑ ½ºÆ®¸µ
+        		String prevStr = ""; 	// ê°’ ë¹„êµë¥¼ ìœ„í•œ ìŠ¤íŠ¸ë§
         		int j = 0;
         		while(j < share) {
         			int tp = j+i;
@@ -44,7 +44,7 @@ public class Programmers_String_zip {
     			}
     	        
             	list.add(result.length());
-            	System.out.println(i + "°³·Î ÀÚ¸¦ ¶§ : " + result);
+            	System.out.println(i + "ê°œë¡œ ìë¥¼ ë•Œ : " + result);
         	}
         	
         	
@@ -54,7 +54,7 @@ public class Programmers_String_zip {
         
 		int answer = list.get(0);
         
-        System.out.println("±â´ñ°ª : " + answer);
+        System.out.println("ê¸°ëŒ“ê°’ : " + answer);
         return answer;
     }
 	
@@ -64,9 +64,9 @@ public class Programmers_String_zip {
 		
 		for(int i = 0; i < inputStr.length; i++) {
 			if(solution(inputStr[i]) == result[i]) {
-				System.out.println("¼º°ø\n");
+				System.out.println("ì„±ê³µ\n");
 			} else {
-				System.out.println("½ÇÆĞ\n");
+				System.out.println("ì‹¤íŒ¨\n");
 			}
 		}
 	}
