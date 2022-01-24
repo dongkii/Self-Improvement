@@ -93,7 +93,7 @@ TDD는 위와 같은 형태의 반복적인 흐름을 갖는다. 단위 테스�
     - 입금/출금
     - 예상 복리 이자(추가 개발)
 
-[TEST SOURCE](https://github.com/dongkii/spring-boot-webservice/blob/master/src/test/java/Bank_BusinessTest/AccountTest.java)
+[TEST SOURCE 보기](https://github.com/dongkii/spring-boot-webservice/blob/master/src/test/java/Bank_BusinessTest/AccountTest.java)
 
 <br/>
 <br/>
