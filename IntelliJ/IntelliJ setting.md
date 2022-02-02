@@ -40,13 +40,24 @@ dependencies {
     testAnnotationProcessor('org.projectlombok:lombok')
 
     implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    /*
+    - 스프링 부트용 Spring Data JPA 추상화 라이브러리
+    - 스프링 부트 버전에 맞춰 자동으로 JPA관련 라이브러리들의 버전을 관리해 줍니다.
+    */
+
     implementation("org.mariadb.jdbc:mariadb-java-client")
     implementation('com.h2database:h2')
+    /*
+    - 인메모리 관계형 데이터베이스
+    - 별도의 설치가 필요 없이 프로젝트 의존성만으로 관리할 수 있습니다.
+    - 메모리에서 실행되기 때문에 애플리케이션을 재시작할 때마다 초기화된다는 점을 이용하여 테스트 용도로 많이 사용된다.
+    */
 
-//implementation('org.springframework.boot:spring-boot-starter-oauth2-client') // 권한 관련//implementation('org.springframework.session:spring-session-jdbc') // 권한 관련
+    //implementation('org.springframework.boot:spring-boot-starter-oauth2-client') // 권한 관련
+    //implementation('org.springframework.session:spring-session-jdbc') // 권한 관련
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
-//testImplementation("org.springframework.security:spring-security-test") // 권한 관련
+    //testImplementation("org.springframework.security:spring-security-test") // 권한 관련
 }
 
 ```
