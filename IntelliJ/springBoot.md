@@ -8,7 +8,8 @@
     - ORM이기 때문에 자바 클래스와 **`DB테이블`** 을 매핑한다.(sql을 매핑하지 않는다.
 <br/>
 <br/>
-- ORM (Object-Relation Mapping/객체-관계 매핑)
+
+- ORM (Object-Relation Mapping/객체-관계 매핑)  
     - `DB 데이터` ← mapping → Object 필드
         - 객체를 통해 간접적으로 DB데이터를 다룬다.
     - 객체와 DB의 데이터를 자동으로 매핑해준다.
@@ -16,4 +17,3 @@
         - 객체간 관계를 바탕으로 **SQL을 자동으로 생성** 한다.
     - Persistant API라고 할 수 있다.
     - JPA, Hibernate
-
