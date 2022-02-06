@@ -85,10 +85,28 @@ domain (package)
     ㄴ posts (package)
         ㄴ Posts (class) DB와 매핑될 클래스, Entity 클래스라고도 함
         ㄴ PostsRepository (interface)  Posts 클래스로 DB를 접근하게 해줄 JpaRepository 를 생성 Dao라고 불리는 DB Layer 접근자
+    ㄴ BaseTimeEntity 모든 Entity 클래스의 상위클래스가 되어 createdDate, modifiedDate를 자동으로 관리
+service
+    ㄴ PostsService
+web
+    ㄴ dto
+        ㄴ PostsSaveRequestDto  controller와 service에서 사용할 dto, Request/Response용 dto, 자주변경 필요
+    ㄴ PostsApiController   service와의 연결은 생성자로 주입, @RequiredArgsContructor 를 이용 final이 선언된 모든 필드를 생성자로 만듬
 ```
 - Entity 클래스에는 절대 Setter 메소드를 만들지 않는다.
 - 생성자를 통해 최종값을 채운 후 DB에 삽입 하는것이며, 값 변경이 필요한 경우 해당 이벤트에 맞는 public 메소드를 호출하여 변경하는 것을 전제로 해야함
-- 생성자 대신 @Builder를 통해 제공되는 빌더 클래스를 사용
+- 생성자 대신 @Builder를 통해 제공되는 빌더 클래스를 사용  
+<br/>
+
+> ### 각 클래스의 역할
+- Controller - 비지니스 로직 처리
+- Service - 트랜잭션과 도메인 순서 보장
+- Dto - Entity의 필드 중 일부만 사용, Entity를 받아 처리, Response/Request가 자주 일어나는 클래스, 결과값으로 여러 테이블 조인이 필요할 떄 사용됨
+- Entity - Entity의 수정시 모든 클래스 수정이 필요함, DB와 매핑될 클래스, Entity는 **`DB와 맞닿은 핵심 클래스`**, Entity를 기준으로 스키마가 변경 됨
+- JpaRepository - Enitiy와 DB를 연결해주는 DB Layer 접근자, Dao라고 불림
+- BaseTimeEntity - 모든 Entity클래스의 슈퍼클래스가 되며, 해당 클래스의 필드가 모든 필드에 적용
+
+<br/>
 
 > ex) new Example(b, a) 처럼 a와 b의 위치를 변경해도 코드를 실행하기 전까지는 문제를 찾을 수 없는경우
 ```java
@@ -107,4 +125,32 @@ Example.builder()
     .b(b)
     .build();
 ```
-- 위와 같이 **어느 필드에 어떤 값을 채워야 할지** 명확하제 인지할 수 있다.
+- 위와 같이 **어느 필드에 어떤 값을 채워야 할지** 명확하게 인지할 수 있다.
+
+- Service 에서는 비지니스 로직을 처리하는 것이 아니라 **`트랜잭션, 도메인 간 순서 보장 역할`** 만 한다.
+
+- update 기능에서 DB 쿼리를 날리는 부분이 없는 이유? - **JPA의 영속성 컨텍스트** 때문
+    - 영속성 컨텍스트란, **엔티티를 영구 저장**하는 환경
+    - 일종의 논리적 개념, JPA의 핵심 내용은 **엔티티가 영속성 컨텍스트에 포함 되어있냐 아니냐**로 갈린다.
+    - JPA의 엔티티 매니저가 활성화된 상태로(Spring Darta Jpa를 쓴다면 기본옵션) **트랜잭션 안에서 데이터베이스에서 데이터를 가져오면** 영속성 컨텍스트가 유지된 상태이다.
+    - 해당 상태에서 데이터의 값을 변경하면 **트랜잭션이 끝나는 시점에 해당 테이블에 변경분을 반영** 한다.
+    - 위 개념을 **`더티 체킹(dirty checking)`** 이라고 한다  
+<br/>
+<br/>
+
+> ## 머스테치로 화면 구성하기  
+- 템플릿 엔진이란, **지정된 템플릿 양식과 데이터** 가 합쳐져 HTML문서를 출력하는 소프트웨어
+- 서버 템플릿 엔진 - JSP, Freemaker
+- 클라이언트 템플릿 엔진 - 리액트(React), 뷰(Vue)
+- 머스테치(mustache)는 수많은 언어를 지원하는 가장 심플한 템플릿엔진
+    - 루비, 자바스크립트, 파이썬, PHP, 자바, 펄, Go, ASP등 현존하는 대부분의 언어 지원
+- 다른 템플릿 엔진들의 단점
+    - JSP, Velocity : 스프링 부트에서는 권장하지 않는 템플릿 엔진
+    - Freemaker - 템플릿 엔진으로는 너무 과하게 많은 기능을 지원한다. 높은 자유도로 인해 숙련도가 낮을수록 Freemaker 안에 비즈니스 로직이 추가될 확률이 높다.
+    - Thymeleaf - 스프링 진영에서 적극적으로 밀고 있지만 문법이 어렵다. HTML태그에 속성으로 템플릿 기능을 사용하는 방식이 기존 개발자한테 높은 허들로 느껴지는 경우가 많다.  
+<br/>
+- 머스테치의 장점
+    - 문법이 다른 템플릿 엔진보다 심플
+    - 로직 코드를 사용할 수 없어 View의 역할과 서버의 역할이 명확하게 분리된다.
+    - Mustache.js와 Mustache.java 2가지가 다 있어, 하나의 문법으로 클라이언트/서버 템플릿을 모두 사용 가능
+
