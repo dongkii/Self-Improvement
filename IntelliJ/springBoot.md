@@ -152,5 +152,12 @@ Example.builder()
 - 머스테치의 장점
     - 문법이 다른 템플릿 엔진보다 심플
     - 로직 코드를 사용할 수 없어 View의 역할과 서버의 역할이 명확하게 분리된다.
-    - Mustache.js와 Mustache.java 2가지가 다 있어, 하나의 문법으로 클라이언트/서버 템플릿을 모두 사용 가능
+    - Mustache.js와 Mustache.java 2가지가 다 있어, 하나의 문법으로 클라이언트/서버 템플릿을 모두 사용 가능  
+<br/>
+- 로딩속도를 높이기 위해 css는 header에 js는 footer에서 받아 처리
+    - head가 실행되고서야 body가 실행되기 때문에 head가 불러지기 전까지는 백지화면만 노출
+    - 부트스트랩의 경우 제이쿼리가 꼭 있어야하므로, 부트스트랩보다 앞에 제이쿼리를 불러옴  
+<br/>
 
+- {{>layout/header}} - {{>}}는 현재 머스테치 파일(index.mustache)을 기준으로 다른 파일을 가져온다.
+- index.js 의 첫문장에 var main = {} 을 쓰는 이유는 index객체 안에서만 function 이 유효하도록 처리하기 위함
