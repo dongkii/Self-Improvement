@@ -77,7 +77,7 @@
     - 본인 작성 글에 대한 권한 관리
 ```
 
-<br/>
+<br/>  
 
 > JPA 구조
 ```
@@ -92,7 +92,7 @@ web
     ㄴ dto
         ㄴ PostsSaveRequestDto  controller와 service에서 사용할 dto, Request/Response용 dto, 자주변경 필요
     ㄴ PostsApiController   service와의 연결은 생성자로 주입, @RequiredArgsContructor 를 이용 final이 선언된 모든 필드를 생성자로 만듬
-```
+```  
 - Entity 클래스에는 절대 Setter 메소드를 만들지 않는다.
 - 생성자를 통해 최종값을 채운 후 DB에 삽입 하는것이며, 값 변경이 필요한 경우 해당 이벤트에 맞는 public 메소드를 호출하여 변경하는 것을 전제로 해야함
 - 생성자 대신 @Builder를 통해 제공되는 빌더 클래스를 사용  
