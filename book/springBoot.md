@@ -1,4 +1,6 @@
-> ## 용어 정리
+> # 스프링 부트와 AWS로 혼자 구현하는 웹 서비스
+
+> ### 용어 정리
 
 - JPA (Java Persistence API)  
     - 자바 ORM 기술에 대한 표준 명세로, `JAVA`에서 제공하는 API이다. 스프링에서 제공하는 것이 아님!  
@@ -52,7 +54,7 @@
     <br/>
 
 
-> ## JPA
+> ## Chapter 03. 스프링 부트에서 JPA로 데이터베이스 다뤄보자
 - 인터페이스인 JPA를 사용하기 위해서는 구현체가 필요.  
     - 대표적으로는 Hibernate, EclipseLink 등이 있다.  
 - 구현체를 좀 더 쉽게 사용하고자 추상화 시킨 **`Spring Data JPA`** 라는 모듈을 사용  
@@ -95,7 +97,22 @@ web
     ㄴ PostsApiController   service와의 연결은 생성자로 주입, @RequiredArgsContructor 를 이용 final이 선언된 모든 필드를 생성자로 만듬
 ```  
 - Entity 클래스에는 절대 Setter 메소드를 만들지 않는다.
-- 생성자를 통해 최종값을 채운 후 DB에 삽입 하는것이며, 값 변경이 필요한 경우 해당 이벤트에 맞는 public 메소드를 호출하여 변경하는 것을 전제로 해야함
+- 생성자를 통해 최종값을 채운 후 DB에 삽입 하는것이며, 값 변경이 필요한 경우 해당 이벤트에 맞는 public 메소드를 호출하여 변경하는 것을 전제로 해야함  
+
+    ```java
+    public class Posts {
+        ...
+
+        public void update(String title, String content) {
+            this.title = title;
+            this.content = content;
+        }
+    }
+
+    /*
+    해당 업데이트 메서드는 Entity 클래스에 작성되며, Setter처럼 생성자의 값을 변경할 경우 DB접근이 일어나게 된다. 이때문에 Entity 클래스에 Setter를 작성하지 않는 이유가 되며, 필드의 값 변경이 필요하면 명확히 그목적과 의도를 나타낼 수 있는 메서드를 만들어야 함
+    */
+    ```
 - 생성자 대신 @Builder를 통해 제공되는 빌더 클래스를 사용  
 <br/>
 
@@ -139,7 +156,7 @@ Example.builder()
 <br/>
 <br/>
 
-> ## 머스테치로 화면 구성하기  
+> ## Chapter 04. 머스테치로 화면 구성하기  
 - 템플릿 엔진이란, **지정된 템플릿 양식과 데이터** 가 합쳐져 HTML문서를 출력하는 소프트웨어
 - 서버 템플릿 엔진 - JSP, Freemaker
 - 클라이언트 템플릿 엔진 - 리액트(React), 뷰(Vue)
