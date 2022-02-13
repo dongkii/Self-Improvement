@@ -1,5 +1,11 @@
 > # 스프링 부트와 AWS로 혼자 구현하는 웹 서비스
 
+## **목차**
+- [용어정리](#1)
+- [Chapter 03. 스프링 부트에서 JPA로 데이터베이스 다뤄보자](#03)
+- [Chapter 04. 머스테치로 화면 구성하기](#04)
+- [Chapter 05. 스프링 시큐리티와 OAuth2.0으로 로그인 기능 구현하기](#05)
+
 > ### 용어 정리
 
 - JPA (Java Persistence API)  
@@ -53,6 +59,7 @@
     - 서로 반대의 기술을 일치하는 것이 개발자의 몫, 관계형 데이터베이스에서는 상속에 대한 표현을 할 수 없음  
     <br/>
 
+<a id="03"></a>
 
 > ## Chapter 03. 스프링 부트에서 JPA로 데이터베이스 다뤄보자
 - 인터페이스인 JPA를 사용하기 위해서는 구현체가 필요.  
@@ -156,6 +163,8 @@ Example.builder()
 <br/>
 <br/>
 
+<a id="04"></a>
+
 > ## Chapter 04. 머스테치로 화면 구성하기  
 - 템플릿 엔진이란, **지정된 템플릿 양식과 데이터** 가 합쳐져 HTML문서를 출력하는 소프트웨어
 - 서버 템플릿 엔진 - JSP, Freemaker
@@ -183,7 +192,9 @@ Example.builder()
 <br/>
 <br/>
 
-> ## Chapter 05. 스프링 시큐리티와 OAuth2.0으로 로그인 기능 구현하기
+<a id="05"></a>
+
+> ## Chapter 05. 스프링 시큐리티와 OAuth2.0으로 로그인 기능 구현하기  
 - 스프링 `시큐리티(Spring Security)`는 `막강한 인증(Authentication)`과 `인가(Authorization)` 기능을 가진 프레임워크이다.  
 - 스프링 시큐리티는 확장성을 고려한 프레임워크이다 보니 `다양한 요구사항을 손쉽게 추가 및 변경` 가능
 
@@ -353,6 +364,36 @@ Example.builder()
 - 2. resolverArgument()
     - 파라미터에 전달할 객체를 생성
     - 여기서는 세션에서 객체를 가져온다
+```
+<br/>
+
+
+> 코드설명 P.207
+```md
+## application-oauth.properties ##
+- 1. user_name_attribute=response
+    - 기준이 되는 user_name의 이름을 네이버에서는 response로 해야한다.
+    - 이유는 네이버의 회원 조회 시 반환되는 JSON 형태기 때문
+```
+<br/>
+
+> 코드설명 P.209
+```md
+## index.mustache ##
+- 1. /oauth2/authorization/naver
+    - 네이버 로그인 URL은 application-oauth.properties에 등록한 redirect-uri 값에 맞춰 자동으로 등록된다.
+    - /oauth2/authorization/ 까지는 고정이고 마지막 Path만 각 소셜 로그인 코드를 사용하면 된다.
+    - 여기서는 naver가 마지막 Path가 된다.
+```
+<br/>
+
+>코드설명 P.216
+```md
+## PostsApiControllerTest
+- 1. @WithMockUser(roles="USER")
+    - 인증된 모의(가짜) 사용자를 만들어서 사용
+    - roles에 권한을 추가할 수 있다.
+    - 즉, 이 어노테이션으로 인해 ROLE_USER 권한을 가진 사용자가 API를 요청하는 것과 동일한 효과를 가지게 된다.
 ```
 <br/>
 
