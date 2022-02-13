@@ -179,3 +179,181 @@ Example.builder()
 
 - {{>layout/header}} - {{>}}는 현재 머스테치 파일(index.mustache)을 기준으로 다른 파일을 가져온다.
 - index.js 의 첫문장에 var main = {} 을 쓰는 이유는 index객체 안에서만 function 이 유효하도록 처리하기 위함
+
+<br/>
+<br/>
+
+> ## Chapter 05. 스프링 시큐리티와 OAuth2.0으로 로그인 기능 구현하기
+- 스프링 `시큐리티(Spring Security)`는 `막강한 인증(Authentication)`과 `인가(Authorization)` 기능을 가진 프레임워크이다.  
+- 스프링 시큐리티는 확장성을 고려한 프레임워크이다 보니 `다양한 요구사항을 손쉽게 추가 및 변경` 가능
+
+
+> 코드설명 P.178
+```md
+- 1. @Enumerated(EnumType.STRING)
+    - JPA로 데이터베이스로 저장할 떄 Enum 값을 어떤 형태로 저장할지를 결정한다.
+    - 기본적으로 int로 된 숫자가 저장된다.
+    - 숫자로 저장되면 데이터베이스로 확인할 때 그 값이 무슨 코드를 의미하는지 알 수가 없다.
+    - 그래서 문자열 (EnumType.STRING)로 저장될 수 있도록 선언
+```
+<br/>
+
+> 코드설명 P.179
+```md
+## UserRepository ##
+- 1. findByEmail
+    - 소셜 로그인으로 반환되는 기본 값 중 email을 통해 이미 생성된 사용자인지 처음 가입하는 사용자인지를 판단하기 위한 메소드
+
+## build.gradle에 의존성 추가 ##
+- 2. spring-boot-starter-oauth2-client 
+    - 소셜 로그인 등 
+```
+<br/>
+
+> 코드설명 P.181
+```md
+## SecurityConfig ##
+- 1. @EnableWebSecurity
+    - Spring Security 설정들을 활성화
+
+- 2. csrf().disable().headers().frameOptions().disable()
+    - h2-console 화면을 사용하기 위해 해당 옵션들을 disable 한다.
+
+- 3. authorizeRequests
+    - URL별 권한 관리를 설정하는 옵션의 시작점
+    - authorizeRequests가 선언되어야만 antMatchers 옵션을 사용할 수 있다.
+
+- 4. antMatchers
+    - 권한 관리 대상을 지정하는 옵션
+    - URL, HTTP 메소드별로 관리가 가능하다.
+    - "/"등 지정된 URL들은 permitAll() 옵션을 통해 전체 열람 권한을 주었다.
+    - "/api/v1/**" 주소를 가진 API는 USER 권한을 가진 사람만 가능하도록 처리
+
+- 5. anyRequest
+    - 설정된 값들 이외 나머지 URL들을 나타낸다.
+    - 여기서는 authenticated()을 추가하여 나머지 URL들은 모두 인증된 사용자들에게만 허용하게 한다.
+    - 인증된 사용자 즉, 로그인한 사용자들을 말한다.
+
+- 6. logout().logoutSuccessUrl("/")
+    - 로그아웃 기능에 대한 여러 설정의 진입점이다.
+    - 로그아웃 성공 시 / 주소로 이동한다.
+
+- 7. oauth2Login
+    - OAuth 2 로그인 기능에 대한 여러 설정의 진입점
+
+- 8. userInfoEndpoint
+    - OAuth 2 로그인 성공 이후 사용자 정보를 가져올 때의 설정들을 담당
+
+- 9. UserService
+    - 소셜 로그인 성공 시 후속 조치를 진행할 UserService 인터페이스의 구현체를 등록
+    - 리소스 서버(즉, 소셜 서비스들)에서 사용자 정보를 가져온 상태에서 추가로 진행하고자 하는 기능을 명시할 수 있다.
+```
+<br/>
+
+> 코드설명 P.184
+```md
+## CustomOAuth2UserService ##
+- 1. registrationId
+    - 현재 로그인 진행 중인 서비스를 구분하는 코드
+    - 지금은 구글만 사용하는 불필요한 값이지만, 이후 네이버 로그인 연동 시에 네이버로 로그인인지, 구글 로그인인지 구분하기 위해 사용
+
+- 2. userNameAttributeName
+    - OAuth2 로그인 진행 시 키가 되는 필드값을 이야기한다. Primary Key와 같은 의미
+    - 구글의 경우 기본적으로 코드를 지원하지만, 네이버 카카오 등은 기본 지원하지 않는다. 구글의 기본코드는 "sub"
+    - 이후 네이버 로그인과 구글 로그인을 동시 지원할 때 사용
+
+- 3. OAuthAttributes
+    - OAuth2UserService를 통해 가져온 OAuth2User의 attribute를 담을 클래스
+    - 이후 네이버 등 다른 소셜 로그인도 이 클래스를 사용
+
+- 4. SessionUser
+    - 세션에 사용자 정보를 저장하기 위한 Dto 클래스
+```
+- SessionUser에 대한 추가 설명
+    - 세션에 저장을 위해 `User 클래스(Entity)`를 사용하지 않는 이유는 `직렬화를 구현하지 않았다`라는 에러 때문
+    - 에러를 해결하기 위해 User에 직렬화코드(Serializable)를 넣을 경우 다른 엔티니와 관계가 형성될지도 모름
+    - 예를들어 User 엔티티가 @OneToMany, @ManyToMany 등 자식 엔티티를 가지고 있으면 직렬화 대상에 자식들까지 포함되니 `성능이슈`, `부수 효과`가 발생할 확률이 높다.
+    - 위의 이슈들 때문에 `직렬화 기능을 가진 세션 Dto`를 하나 추가로 만드는것이 유지보수에 유리하다.
+
+
+<br/>
+
+> 코드설명 P.186
+```md
+## OAuthAttributes ##
+- 1. of()
+    - OAuth2User에서 반환하는 사용자 정보는 Map이기 때문에 값 하나하나를 변환해야만 한다.
+
+- 2. toEntity()
+    - User 엔티티를 생성
+    - OAuthAttributes에서 엔티티를 생성하는 시점은 처음 가입할 때 이다.
+    - 가입할 때의 기본 권한을 GUEST로 주기 위해서 role 빌더값에는 Role.GUEST를 사용
+```
+<br/>
+
+
+> 코드설명 P.189
+```md
+## index.mustache ##
+- 1. {{#userName}}
+    - 머스테치는 다른 언어와 같은 if문(if userName != null 등)을 제공하지 않습니다.
+    - true/false 여부만 판단할 뿐입니다.
+    - 그래서 머스테치에서는 항상 최종값을 넘겨줘야 합니다.
+    - 여기서도 역시 userName이 있다면 userName을 노출시키도록 구성  
+
+- 2. a href="/logout"
+    - 스프링 시큐리티에서 기본적으로 제공하는 로그아웃 URL
+    - 개발자가 별도로 저 URL에 해당하는 컨트롤러를 만들필요가 없다.
+    - SecurityConfig 클래스에서 URL을 변경할 순 있지만 기본 URL을 사용해도 충분하니 그대로 사용
+
+- 3. {{^userName}}
+    - 머스테치에서 해당 값이 존재하지 않는 경우에는 ^를 사용
+    - 여기서는 userName이 없다면 로그인 버튼을 노출시키도록 구성
+ 
+- 4. a href="/oauth2/authorization/google"
+    - 스프링 시큐리티에서 기본적으로 제공하는 로그인 URL
+    - 로그아웃 URL과 마찬가지로 개발자가 별도의 컨트롤러를 생설할 필요가 없다.
+```
+<br/>
+
+> 코드설명 P.191
+```md
+## IndexController ##
+- 1. (SessionUser) httpSession.getAttribute("user")
+    - 앞서 작성된 CustomOAuth2UserService에서 로그인 성공 시 세션에 SessionUser를 저장하도록 구성
+    - 즉, 로그인 성공 시 httpSession.getAttribute("user")에서 값을 가져올 수 있다.
+
+- 2. if(user != null)
+    - 세션에 저장된 값이 있을 때만 model에 userName으로 등록한다.
+    - 세션에 저장된 값이 없으면 model엔 아무런 값이 없는 상태이니 로그인 버튼이 보이게 된다.
+```
+<br/>
+
+> 코드설명 P.196
+```md
+## @LoginUser ##
+- 1. @Target(ElementType.PARAMETER)
+    - 이 어노테이션이 생성될 수 있는 위치를 지정
+    - PARAMETER로 지정했으니 메소드의 파라미터로 선언된 객체에서만 사용할 수 있다.
+    - 이 외에도 클래스 선언문에 쓸 수 있는 TYPE 등이 있다.
+
+- 2. @interface
+    - 이 파일을 어노테이션 클래스로 지정
+    - LoginUser라는 이름을 가진 어노테이션이 생성되었다고 보면 된다.
+```
+<br/>
+
+> 코드설명 P.197
+```md
+## LoginUserArgumentResolver ##
+- 1. supportsParameter()
+    - 컨트롤러 메소드의 특정 파라미터를 지원하는지 판단
+    - 여기서는 파라미터에 @LoginUser 어노테이션이 붙어있고, 파라미터 클래스 타입이 SessionUser.class인 경우 true를 반환
+
+- 2. resolverArgument()
+    - 파라미터에 전달할 객체를 생성
+    - 여기서는 세션에서 객체를 가져온다
+```
+<br/>
+
+
