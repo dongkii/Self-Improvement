@@ -179,3 +179,10 @@ public class RegexExample {
 |\d|숫자 [0-9]와 동일|
 |\D|숫자를 제외한 모든 문자|
 |(?i)|앞 부분에 (?!)라는 옵션을 넣어주게 되면 대소문자는 구분하지 않습니다.|
+
+<br/>
+<br/>
+<br/>
+
+
+> 출처 및 참고 : https://coding-factory.tistory.com/529
