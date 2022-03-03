@@ -399,3 +399,62 @@ Example.builder()
 
 
 > 카카오 로그인 참고자료 : https://loosie.tistory.com/302
+
+<br/>
+<br/>
+
+> 코드설명 P.301
+```md
+## depoly.sh
+- 1. REPOSITORY=/home/ec2-user/app/step1
+    - 프로젝트 디렉토리 주소는 스크립트 내에서 자주 사용하는 값이기 때문에 이를 변수로 저장한다.
+    - 마찬가지로 PROJECT_NAME=freelec-springboot2-webservice도 동일하게 변수로 저장한다.
+    - 쉘에서는 타입 없이 선언하여 저장
+    - 쉘에서는 $ 변수명으로 변수를 사용할 수 있다.
+
+- 2. cd $REPOSITORY/$PROJECT_NAME/
+    - 제일 처음 git clone 받았던 디렉토리로 이동한다.
+    - 바로 위의 쉘 변수 설명에 따라 /home/ec2-user/app/step1/freelec-springboot2-webservice 주소로 이동한다.
+
+- 3. git pull
+    - 디렉토리로 이동 후, master 브랜치의 최신 내용을 받는다.
+
+- 4. ./gradlew build
+    - 프로젝트 내부의 gradlew로 build를 수행한다.
+
+- 5. cp ./build/libs/*.jar $REPOSITORY/
+    - build의 결과물인 jar 파일을 복사해 jar파일을 모아둔 위치로 복사한다.
+
+- 6. CURRENT_PID=$(pgrep -f ${PROJECT_NAME}.*.jar)
+    - 기존에 수행 중이던 스프링 부트 애플리케이션을 종료
+    - pgrep은 process id만 추출하는 명령어이다.
+    - -f 옵션은 프로세스 이름으로 찾는다.
+
+- 7. if ~ else ~ fi
+    - 현재 구동 중인 프로세스가 있는지 없는지를 판단해서 기능을 수행
+    - process id 값을 보고 프로세스가 있으면 해당 프로세스를 종료한다.
+
+- 8. JAR_NAME=$(ls -tr $REPOSITORY/ | grep jar | tail -n 1)
+    - 새로 실행할 jar 파일명을 찾느다.
+    - 여러 jar파일이 생기기 때문에 tail -n로 가장 나중의 jar파일(최신 파일)을 변수에 저장
+
+- 9. nohup java -jar $REPOSITORY/$JAR_NAME 2>&1 &
+    - 찾은 jar 파일명으로 해당 jar 파일을 nohup으로 실행
+    - 스프링 부트의 장점으로 특별히 외장 톰캣을 설치할 필요가 없다.
+    - 내장 톰캣을 사용해서 jar 파일만 있으면 바로 웹 어플리케이션 서버를 실행할 수 있다.
+    - 일반적으로 자바를 실행할 때는 java -jar라는 명령어를 사용하지만, 이렇게 하면 사용자가 터미널 접속을 끊을 때 애플리케이션도 같이 종료된다.
+    - 애플리케이션 실행자가 터미널을 종료해도 애플리케이션은 계속 구동될 수 있도록 nohup 명령어를 사용한다.
+```
+
+<br/>
+
+> 코드설명 P.310
+```md
+- 1. spring.jpa.hibernate.ddl-auto=none
+    - JPA로 테이블이 자동 생성되는 옵션을 None(생성하지않음)으로 지정한다.
+    - RDS에는 실제 운영으로 사용될 테이블이니 절대 스프링 부트에서 새로 만들지 않도록 해야 한다.
+    - 이 옵션을 하지 않으면 자칫 테이블이 모두 새로 생성될 수 있다.
+    - 주의해야 하는 옵션이다...
+```
+
+<br/>
