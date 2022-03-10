@@ -450,11 +450,17 @@ Example.builder()
 
 > 코드설명 P.310
 ```md
+## ~/app/application-real-db.properties
 - 1. spring.jpa.hibernate.ddl-auto=none
     - JPA로 테이블이 자동 생성되는 옵션을 None(생성하지않음)으로 지정한다.
     - RDS에는 실제 운영으로 사용될 테이블이니 절대 스프링 부트에서 새로 만들지 않도록 해야 한다.
     - 이 옵션을 하지 않으면 자칫 테이블이 모두 새로 생성될 수 있다.
     - 주의해야 하는 옵션이다...
+
+## ~/app/step1/deploy.sh
+- 2. -Dspring.profiles.active=real
+    - application-real.properties를 활성화 시킨다.
+    - application-real.properties의 spring.profiles.include=oauth,real-db 옵션 때문에 real-db 역시 함께 활성화 대상에 포함된다.
 ```
 
 <br/>
