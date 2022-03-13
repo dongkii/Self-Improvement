@@ -579,3 +579,102 @@ Example.builder()
     - ApplicationStart라는 단계에서 deploy.sh를 ec2-user 권한으로 실행하게 한다.
     - timeout: 60으로 스크립트 실행 60초 이상 수행되면 실패가 된다.
 ```
+
+> 코드설명 P.377
+```md
+## sudo vim /etc/nginx/nginx.conf
+- 1. proxy_pass
+    - 엔진엑스로 요청이오면 http://localhost:8080로 전달한다.
+
+- 2. proxy_set_header XXX
+    - 실제 요청 데이터를 header의 각 항목에 할당한다.
+    - 예) proxy_set_header X-Real-IP $remote_addr: Request Header의 X-Real-IP에 요청자의 IP를 저장한다.
+```
+
+<br/>
+
+> 코드설명 P.380
+```md
+## /src/main/java/com/dongkii/springboot/web/ProfileController.java
+- 1. env.getActiveProfiles()
+    - 현재 실행 중인 ActiveProfile을 모두 가져온다.
+    - 즉, real, oauth, real-db등이 활성화 되어 있다면(active) 3개가 모두 담겨 있다.
+    - 여기서 real, rea1, real2는 모두 배포에 사용될 profile이라 이 중 하나라도 있으면 그 값을 반환하도록 한다.
+    - 실제로 이번 무중단 배포에서는 real1과 real2만 사용되지만, step2를 다시 사용해 볼 수도 있으니 real도 남겨둔다.
+```
+
+<br/>
+
+> 코드설명 P.389
+```md
+## /scripts/profile.sh
+- 1. $(curl -s -o /dev/null -w "%{http_code}" http://localhost/profile)
+    - 현재 엔진엑스가 바라보고 있는 스프링 부트가 정상적으로 수행 중인지 확인한다.
+    - 응답값을 HttpStatus로 받는다.
+    - 정상이면 200, 오류가 발생한다면 400~503 사이로 발생하니 400 이상은 모두 예외로 보고 real2를 현재 profile로 사용한다.
+
+- 2. IDLE_PROFILE
+    - 엔진엑스와 연결되지 않은 profile이다.
+    - 스프링 부트 프로젝트를 이 profile로 연결하기 위해 변환한다.
+
+- 3. echo "${IDLE_PROFILE}"
+    - bash라는 스크립트는 값을 반환하는 기능이 없다.
+    - 그래서 제일 마지막 줄에 echo로 경과를 출력 후, 클라이언트에서 그 값을 잡아서 ($(find_idle_profile)) 사용한다.
+    - 중간에 echo를 사용해선 안된다.
+```
+
+<br/>
+
+> 코드설명 P.390
+```md
+## /scripts/stop.sh
+- 1. ABSDIR=$(dirname $ABSPATH)
+    - 현재 stop.sh가 속해 있는 경로를 찾는다.
+    - 하단의 코드와 같이 profile.sh의 경로를 찾기 위해 사용
+
+- 2. source ${ABSDIR}/profile.sh
+    - 자바로 보면 일종의 import 구문이다.
+    - 해당 코드로 인해 stop.sh에서도 profile.sh의 여러 function을 사용할 수 있게 된다.
+```
+
+<br/>
+
+> 코드설명 P.391
+```md
+## /scripts/start.sh
+- 1. 기본적인 스크립트는 step2의 deploy.sh와 유사하다.
+
+- 2. 다른 점이라면 IDLE_PROFILE을 통해 properties 파일을 가져오고(application-$IDLE_PROFILE.properties), active profile을 지정하는 것(-Dspring.profiles.active=$IDLE_PROFILE) 뿐 이다.
+
+- 3. 여기서도 IDLE_PROFILE을 사용하니 profile.sh을 가져와야 한다.
+```
+
+<br/>
+
+> 코드설명 P.393
+```md
+## /scripts/health.sh
+- 1. 엔진엑스와 연결되지 않은 포트로 스프링 부트가 잘 수행되었는지 체크한다.
+
+- 2. 잘 떴는지 확인되어야 엔진엑스 프록시 설정을 변경(switch_proxy)한다.
+
+- 3. 엔진엑스 프록시 설정 변경은 switch.sh에서 수행한다.
+
+## /scripts/switch.sh
+- 1. echo "set \$service_url http://127.0.0.1:${IDLE_PORT};"
+    - 하나의 문장을 만들어 파이프라인(|)으로 넘겨주기 위해 echo를 사용한다.
+    - 엔진엑스가 변경할 프록시 주소를 생성한다.
+    - 쌍따옴표 (")를 사용해야 한다.
+
+- 2. | sudo tee /etc/nginx/conf.d/service-url.inc
+    - 앞에서 넘겨준 문장을 service-url.inc에 덮어쓴다.
+
+- 3. sudo service nginx reload
+    - 엔진엑스 설정을 다시 불러온다.
+    - restart와는 다르다.
+    - restart는 잠시 끊기는 현상이 있지만, reload는 끊김 없이 다시 불러온다.
+    - 다만, 중요한 설정들은 반영되지 않으므로 restart를 사용해야 한다.
+    - 여기선 외부 설정 파일인 service-url 을 다시 불러오는 거라 reload로 가능하다.
+```
+
+<br/>
