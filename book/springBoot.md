@@ -464,3 +464,118 @@ Example.builder()
 ```
 
 <br/>
+
+> 코드설명 P.326
+```md
+## /.travis.yml
+- 1. branches
+    - Travis CI를 어느 브랜치가 푸시될 때 수행할지 지정한다.
+    - 현재 옵션은 오직 master 브랜치에 push될 때만 수행한다.
+
+- 2. cache
+    - 그레이들을 통해 의존성을 바덱 되면 이를 해당 디렉토리에 캐시하여, 같은 의존성은 다음 배포 때부터 다ㅣㅅ 받지 않도록 설정한다.
+
+- 3. script
+    - master 브랜치에 푸시 되었을 때 수행하는 명령어이다.
+    - 여기서는 프로젝트 내부에 둔 gradlew을 통해 clean & build를 수행한다.
+
+- 4. notifications
+    - Travis CI 실행 완료 시 자동으로 알람이 가도록 설정한다.
+```
+
+<br/>
+
+> 코드설명 P.339
+```md
+## /.travis.yml
+- 1. before_deploy
+    - deploy 명령어가 실행되기 전에 수행된다.
+    - CodeDeploy는 Jar 파일은 인식하지 못하므로 jar+기타 설정 파일듣ㄹ을 모아 압축(zip) 한다.
+
+- 2. zip -r freelec-springboot2-webservice
+    - 현재 위치의 모든 파일을 freelec-springboot2-webservice 이름으로 압축(zip) 한다.
+    - 명령어의 마지막 위치는 본인의 프로젝트 이름이어야 한다.
+
+- 3. mkdir -p deploy
+    - deploy 라는 디렉토리를 Travis CI 가 실행중인 위치에서 생성한다.
+
+- 4. mv freelec-springboot2-webservice.zip deploy/freelec-springboot2-webservice.zip
+    - freelec-springboot2-webservice.zip 파일을 deploy/freelec-springboot2-webservice.zip으로 이동 시킨다.
+
+- 5. deploy
+    - S3로 파일 업로드 혹은 CodeDeploy로 배포 등 외부 서비스와 연동될 행위들을 선언한다.
+
+- 6. local_dir: deploy
+    - 앞에서 생성한 deploy 디렉토리를 지정한다.
+    - 해당 위치의 파일들만 S3로 전송한다.
+```
+
+<br/>
+
+> 코드설명 P.354
+```md
+## /appspec.yml
+- 1. version: 0.0
+    - CodeDeploy 버전을 이야기한다.
+    - 프로젝트 버전이 아니므로 0.0 외에 다른 버전을 사용하면 오류가 발생한다.
+
+- 2. source
+    - CodeDeploy에서 전달해 준 파일 중 destination으로 이동시킬 대상을 지정한다.
+    - 루트 경로(/)를 지정하면 전체 파일을 이야기한다.
+
+- 3. destination
+    - source에서 지정된 파일을 받을 위치이다.
+    - 이후 Jar를 실행하는 등은 destination에서 옮긴 파일들로 진행된다.
+
+- 4. overwrite
+    - 기존에 파일들이 있으면 덮어쓸지를 결정한다.
+    - 현재 yes라고 했으니 파일들을 덮어쓰게 된다.
+```
+
+<br/>
+
+> 코드설명 P.360
+```md
+## /script/deploy.sh
+- 1. CURRENT_PID
+    - 현재 수행 중인 스프링 부트 애플리케이션의 프로세스 ID를 찾는다.
+    - 실행 중이면 종료하기 위해서이다.
+    - 스프링 부트 애플리케이션 이름(freelec-springboot2-webservice)으로 된 다른 프로그램들이 있을 수 있어 freelec-springboot2-webservice로 된 jar(pgrep -fl freelec-springboot2-webservice | grep jar) 프로세스를 찾은 뒤 ID를 찾는다.(| awk '{print $1}').
+    
+- 2. chmod +x $JAR_NAME
+    - Jar 파일은 실행 권한이 없는 상태이다.
+    - nohup으로 실행할 수 있게 실행 권한을 부여한다.
+
+- 3. $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
+    - nohup 실행 시 CodeDeploy는 무한 대기한다.
+    - 이 이슈를 해결하기 위해 nohup.out 파일을 표준 입출력용으로 별도로 사용한다.
+    - 이렇게 하지 않으면 nohup.out 파일이 생기지 않고, CodeDeploy 로그에 표준 입출력이 출력된다.
+    - nohup이 끝나기 전까지 CodeDeploy도 끝나지 않으니 꼭 이렇게 해야 한다.
+```
+
+<br/>
+
+> 코드설명 P.361
+```md
+## /.travis.yml
+- 1. Travis CI는 S3 로 특정 파일만 업로드가 안된다.
+    - 디렉토리 단위로만 업로드할 수 있기 때문에 before-deploy 디렉토리는 항상 생성한다.
+
+- 2. before-deploy에는 zip 파일에 포함시킬 파일들을 저장한다.
+
+- 3. zip -r 명령어를 통해 before-deploy 디렉토리 전체 파일을 압축한다.
+```
+
+<br/>
+
+> 코드설명 P.362
+```md
+## /appspec.yml
+- 1. permissions
+    - CodeDeploy에서 EC2 서버로 넘겨준 파일들을 모두 ec2-user 권한을 갖도록 한다.
+
+- 2. hooks
+    - CodeDeploy 배포 단계에서 실행할 명령어를 지정한다.
+    - ApplicationStart라는 단계에서 deploy.sh를 ec2-user 권한으로 실행하게 한다.
+    - timeout: 60으로 스크립트 실행 60초 이상 수행되면 실패가 된다.
+```
