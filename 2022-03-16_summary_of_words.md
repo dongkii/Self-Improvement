@@ -79,7 +79,7 @@
 
 <br/>
 
-# 3. Kubernetes(k8s, kube)<a id="kubernetes"></a>
+# Kubernetes(k8s, kube)<a id="kubernetes"></a>
 - 정의 및 특징
     - 컨테이너로 구성된 애플리케이션을 효율적으로 배포하며 운영하기 위해 사용되는 오픈소스 플랫폼
     - Pod 단위로 배포, 한개이상의 컨테이너와 스토리지, 네트워크 속성을 가진다.
