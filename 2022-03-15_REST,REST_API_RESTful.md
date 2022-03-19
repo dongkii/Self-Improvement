@@ -21,6 +21,7 @@
 <br/>
 
 # 1. REST 란<a id="1"></a>
+![REST](./img/2022_03_15/REST.png)
 
 ## 1-1. REST의 정의<a id="1-1"></a>  
 - "Representational State Transfer"** 의 약자
@@ -157,6 +158,9 @@
 <br/><br/>
 
 # 2. REST API란<a id="2"></a>
+
+![REST_API](./img/2022_03_15/REST_API.png)
+
 - API(Application Programming Interface)란
     - 데이터와 기능의 집합을 제공하여 컴퓨터 프로그램간 상호작용을 촉진하며, 서로 정보를 교환가능 하도록 하는 것
 
@@ -179,5 +183,52 @@
  - 스토어 : 클라이언트에서 관리하는 리소스 저장소
 
  1. URI는 정보의 자원을 표현해야 한다.
-    - resource는 동사보다는 명사를, 대문자보다는 소문자를 사용한다.
-    
+ 2. 자원의 대한 행위는 HTTP Method(GET, PUT, POST, DELETE 등)로 표현한다.
+
+## 2-4 REST API 설계 규칙<a id="2-4"></a>
+ 1. 슬래시 구분자(/)는 계층 관계를 나타내는데 사용한다.
+ 2. URI 마지막 문자로 슬래시(/)를 포함하지 않는다.
+ 3. 하이픈(-)은 URI 가독성을 높이는데 사용
+ 4. 밑줄(_)은 URI에 사용하지 않는다.
+ 5. URI 경로에는 소문자가 적합하다.
+ 6. 파일확장자는 URI에 포함하지 않는다.
+ 7. 리소스 간에는 연관 관계가 있는 경우
+
+## 2-5 REST API 설계 예시
+![REST_API_설계_예시](./img/2022_03_15/REST_API_설계_예시.png)
+
+응답 상태 코드  
+ - 1XX : 전송 프로토콜 수준의 정보 교환
+ - 2XX : 클라이언트 요청이 성공적으로 수행됨
+ - 3XX : 클라이언트는 요청을 완료하기 위해 추가적인 행동을 취해야 함
+ - 4XX : 클라이언트의 잘못된 요청
+ - 5XX : 서버쪽 오류로 인한 상태코드
+
+ <br/>
+ <br/>
+
+# 3. RESTful 이란<a id="3"></a>
+
+![REST_ful](./img/2022_03_15/REST_ful.png)
+
+
+<br/>
+
+## 3-1. RESTful의 정의<a id="3-1"></a>
+- RESTful은 일반적으로 REST라는 아키텍처를 구현하는 웹 서비스를 나타내기 위해 사용되는 용어이다.
+    - 'REST API'를 제공하는 웹 서비스를 'RESTful'하다고 할 수 있다.
+- RESTful은 REST를 REST답게 쓰기 위한 방법으로, 누군가가 공식적으로 발표한 것이 아니다.
+    - 즉, REST 원리를 따르는 시스템은 RESTful이란 용어로 지칭된다.
+
+## 3-2. RESTful의 목적<a id="3-2"></a>
+- 이해하기 쉽고 사용하기 쉬운 REST API를 만드는 것
+- RESTful한 API를 구현하는 근본적인 목적이 성능 향상에 있는 것이 아니라 일관적인 컨벤션을 통한 API의 이해도 및 호환성을 높이는 것이 주 동기이니, 성능이 중요한 상황에서는 굳이 RESTful한 API를 구현할 필요는 없다.
+
+## 3-3. RESTful 하지 못한 경우<a id="3-3"></a>
+1. CRUD 기능을 모두 POST로만 처리하는 API
+2. route에 resource, id 외의 정보가 들어가는 경우 (/students/updateName)
+
+<br/>
+<br/>
+
+> ### 출처 및 참고 : https://gmlwjd9405.github.io/2018/09/21/rest-and-restful.html
