@@ -14,7 +14,7 @@
 - TDD
 - BDD
 - Agile
-- Redis
+- [Redis](#redis)
 - ELB
 - VPC
 - EC2
