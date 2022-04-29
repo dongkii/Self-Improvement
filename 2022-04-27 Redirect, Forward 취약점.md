@@ -21,12 +21,20 @@ http://www.example.com/redirect.jsp?url=evil.com
 ### **`3. Redirect를 이용한 Phishing 예제`**
 아래와 같이 오리지널 사이트의 주소를 이용해서 사용자를 유인한다.
 
-http://original_site.com/redirect.html?<span style="color: red;">q=http://external_site.com/external_page.html</span>
-http://original_site.com/redirect.html?<span style="color: red;">q=http://evil.com/evil_page.html</span>
-http://original_site.com/redirect.html?<span style="color: red;">q=http://</%65%76%69%6c%2e%63%6f%6d/evil_page.html<span>
+http://original_site.com/redirect.html?<span style="color: red;">q=http://external_site.com/external_page.html</span>  
+http://original_site.com/redirect.html?<span style="color: red;">q=http://evil.com/evil_page.html</span>  
+http://original_site.com/redirect.html?<span style="color: red;">q=http://%65%76%69%6c%2e%63%6f%6d/evil_page.html</span>
 
 <br/>
 
 ### **`4. Redirect에 사용자가 자주 속는 이유는?`**
 제공된 링크 주소가 평소 알고 있던 원래 사이트 주소이기 때문에 안심하고 링크를 클릭하게 된다.
 
+<br/>
+<br/>
+
+## 해결방안
+1. 화이트리스트 작성으로 redirect url 검증 절차 필요
+    - 법인몰일 경우 interparkb2b.co.kr 체크? (서비스몰에 등록된 URL과 같은지 체크)
+    - 제휴사의 경우??
+2. CR/LF(Carriage Return/Line Feed) 문자 포함의 경우 에러페이지 리턴
