@@ -1,6 +1,6 @@
 # 카프카 구성요소 (Kafka Architecture)
 
-![Kafka_Architecture](./img/2023_05_31/kafka_Architecture.png)
+![Kafka_Architecture](./img/2023_05_31/Kafka_Architecture.png)
 
 ## **목차**
 - [1. Topic이란?](#1)
@@ -60,7 +60,7 @@
 
 ## 5. Producer <a id="5"></a>
 
-![Producer](./img/2023_05_31/Producer.png)
+![Producer](./img/2023_05_31/producer.png)
 
 - 메시지를 토픽으로 보내는 역할을 한다.
 - Producer는 카프카 토픽으로 메시지를 게시를 하는 클라이언트이다.
