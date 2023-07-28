@@ -117,3 +117,31 @@ Druid는 batch와 real-time 데이터 수집을 지원한다.
 <br/>
 
 ## 2-1. 데이터 ROll-Up <a id="2-2"></a>
+Druid는 수집 단계에서 데이터를 롤업하여 디스크에 저장할 raw 데이터의 양을 줄일 수 있다. 롤업은 요약이나 사전집계(pre-aggregation)의 한 종류이다. 데이터를 롤업하면 저장할 데이터의 크기를 줄이고 row 수를 크게는 몇 배까지 줄일 수 있다. 롤업의 효용성에 대한 대가로(trade-off) 개별 이벤트들에 대한 쿼리를 날릴 수 없다.
+
+timestamp 단위로 rollup을 진행하면 아래와 같은 결과를 얻을 수 있다. 그 시간에 어떤 이벤트가 발생했는지보다 시간대별 발생횟수가 필요한 상황에는 필요 없는 모든 데이터를 저장하지 않고 count라는 metric 컬럼을 사용하여 통합하여 저장한다.  
+rollup은 원천 데이터 저장 용량을 최소화시켜 스토리지에 대한 리소스를 절약하며 쿼리속도를 빠르게 할 수 있다.
+
+![druid_rollup](./img/2023_07_28/druid_rollup.png)
+
+수집 시 'granularitySpec'.'rollup' 설정으로 롤업을 조절한다. 롤업은 기본적으로 활성화 되어있다. 즉, Druid는 'granularitySpec'.'queryGranularity' 설정 기반으로 dimension과 timestamp 같이 동일한 모든행을 단일행으로 결합한다.
+
+<br/>
+설정예시)
+
+```json
+"granularitySpec": {
+  "segmentGranularity": "day",
+  "queryGranularity": "none",
+  "intervals": [
+    "2013-08-31/2013-09-01"
+  ],
+  "rollup": true
+}
+```
+
+롤업을 비활성화하면 Druid는 각 행을 있는 그대로 로드한다. 비활성화 모드는 롤업 기능을 지원하지 않는 데이터베이스와 유사하다.
+
+> 참고)  
+> queryGranularity 옵션에 대해 살펴보면, 이 옵션은 **세그먼트 내 타임스탬프 보관의 세부 단위**이다. 이 값은 세그먼트 단위와 같거나 더 상세해야한다. 쿼리할 수 있는 가장 작은 단위이며 '분' 단위로 지정했다면 분의 배수(5분, 10분, 시간)로도 쿼리가 가능하다.  
+> 여러 단위를 입력할 수 있다. 타임스탬프를 자르지않고 그대로 저장하려면 'None'으로 설정한다.  
