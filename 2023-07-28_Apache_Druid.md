@@ -268,3 +268,89 @@ Druid coordinator node는 주로 세그먼트 관리와 분배 역할을 수행�
 할당되지 않은 세그먼트는 항상 최소 용량 노드에 할달되어 노드 간 균형 수준을 유지한다. coordinator는 새로운 세그먼트를 할당할 때 historical nodes와 직접 통신하지 않으며, 대신 historical 노드의 로드 큐 경로에 새로운 세그먼트에 대한 임시 정보를 저장한다. 이 요청이 표시되면 historical 노드가 세그먼트를 load하고 서비스를 시작한다.
 
 ***Coodinator 관련 더 많은 내용은 <a href="https://druid.apache.org/docs/0.13.0-incubating/design/coordinator.html">링크</a> 참고**
+
+<br/>
+<br/>
+
+## 7. Indexing Service<a id="7"></a>
+Druid indexing serivce는 인덱싱 관련 작업을 실행하는 고가용성 분산 서비스이다. (high-avilable) **indexing tasks는 Druid segments를 생성하거나 삭제(destroy) 한다.**
+
+![indexing_service](./img/2023_07_28/indexing_service.png)
+
+인덱싱 서비스는 세 가지 주요 components로 구성된다.
+1. Peon : 단일 task 실행
+2. Middle Manager : peon을 관리하는 미들매니저
+3. Overload : MM(Middle manager)에 할당된 작업을 관리하는 오버로드
+
+Overload와 MiddleManager는 동일한 프로세스 또는 다른 프로세스에서 실행될 수 있지만, **MiddleManager와 Peon은 항상동일한 프로세스에서 실행되어야 한다.**
+
+<br/>
+
+## 7-1. Overload<a id="7-1"></a>
+
+![overload](./img/2023_07_28/overload.png)
+
+Overload Node는 태스크 수락, 태스크 분배 조정, 태스크 주변 잠금 생성(creating lodck around tasks) 및 호출자에게 상태를 반환하는 역할을 한다. 즉, 데이터 수집 workload 할당을 컨트롤한다.
+
+* workload : A workload is the amount of computing resources and time it takes to complete a task or generate an outcome.
+
+* task : middle manager에서 실행되며 항상 단일 데이터 소스에서 작동한다. 
+
+task에는 여러 유형이 있다. segment creation tasks, compaction tasks, segment merging tasks, ...
+
+자세한 사항은 <a href="https://druid.apache.org/docs/0.13.0-incubating/ingestion/tasks.html">링크</a>를 참고
+
+
+![indexing_service](./img/2023_07_28/indexing_service.png)
+
+오버로드는 로컬 또는 원격(기본값은 로컬)의 두 가지 모드 중 하나로 실행되도록 구성할 수 있다.
+로컬모드 : 오버로드는 tasks를 실행할 peons를 생성하는 역할도 수행한다. 로컬모드에서 오버로드를 실행할 때는 모든 MiddleManager 및 Peon 구성도 제공해야 한다. 로컬 모드는 일반적으로 단순 워크플로우에 사용된다.  
+원격 모드 : Overload와 MiddleManager는 별도의 프로세스에서 실행되며 각각 다른 서버에서 실행할 수 있다. 인덱싱 서비스를 모든 Druid 인덱싱에 대한 단일 endpoint로 사용하려는 경우 이 모드를 사용하는 것이 좋다.
+
+\- Overload console
+오버로드 콘솔을 사용하여 보류중인 작업, 실행중인 작업, 사용 가능한 작업자, 최신 작업자 생성 및 종료를 볼 수 있다.
+> http://<OVERLOAD_IP>:\<PORT>/console.html
+
+<br/>
+
+## 7-2. ModdleManager<a id="7-2"></a>
+MiddleManager(중간 관리자) node는 제출된 task를 실행하는 worker node이다. MiddleManager는 별도의 JVM에서 실행되는 peons(사용자)에게 작업을 전달한다. 작업을 위한 별도의 JVM이 있는 이유는 리소스 및 로그 분리를 위해서이다. 각 Peon(사용자)은 한번에 하나의 task만 실행할 수 있지만 MiddleManager는 여러 peons를 가질 수 있다.
+
+<br/>
+
+## 7-3. Peons<a id="7-3"></a>
+Peons run a single task in a single JVM. MiddleManager는 task를 실행하기 위해 peon을 생성한다. peon은 테스트 목적을 제외하고는 스스로 운영하는 경우가 거의 없어야 한다.
+
+<br/>
+<br/>
+
+## 8. Dependencies<a id="8"></a>
+
+## 8-1. Metadata Storage(MySQL)<a id="8-1"></a>
+
+Druid는 메타데이터 저장소를 외부 종속성에 의존한다. Druid는 메타데이터 저장소를 사용하여 시스템에 대한 다양한 메타데이터를 저장하지만 실제 데이터는 저장하지 않는다. 메타데이터 저장소는 드루이드 클러스터가 작동하는데 필수적인 모든 메타데이터를 유지한다. Derby와 Druid의 기본 메타데이터 스토어지만 운영에는 적합하지 않다.
+
+메타데이터 저장소에는 다음 내용들이 포함된다.
+- Segments records
+- Rule recodes
+- Configguration records
+- Task-related tables
+- Audit records
+
+<br/>
+
+## 8-2. Zookeeper<a id="8-2"></a>
+
+Apache Druid는 현재 클러스터 상태를 관리하기 위해 Apache Zookeeper(ZK)를 사용한다. 분산 어플리케이션을 위한 코디네이션 시스템으로 분산 어플리케이션이 안정적인 서비스를 구현할 수 있도록 분산되어있는 각 애플리케이션 정보를 중앙에 집중시킨다.
+
+## 9. 추가적인 내용<a id="9"></a>
+
+## 9-1. Router<a id="9-1"></a>
+TB 범위의 Druid Cluster가 있는 경우에는 router node가 필요하다. router node를 사용해서 쿼리를 다른 broker node로 라우팅할 수 있다. 기본적으로 브로커는 셋업된 rule을 기반으로 쿼리를 라우팅한다.  
+예를들어, 최근 1개월 데이터를 핫 클러스터에 로드한 경우 최근 한달 내의 데이터가 포함된 쿼리는 전용 브로커 집합으로 라우팅 할 수 있다. 이 범위를 벗어나는 쿼리는 다른 브로커 집합으로 라우팅된다. 이 설정은 중요한 데이터에 대한 쿼리가 덜 중요한 쿼리에 영향을 받지 않도록 춰리 격리를 제공한다.
+
+
+![druid_access](./img/2023_07_28/druid_access.png)
+
+<br/>
+
