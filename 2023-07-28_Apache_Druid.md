@@ -268,4 +268,3 @@ Druid coordinator node는 주로 세그먼트 관리와 분배 역할을 수행�
 할당되지 않은 세그먼트는 항상 최소 용량 노드에 할달되어 노드 간 균형 수준을 유지한다. coordinator는 새로운 세그먼트를 할당할 때 historical nodes와 직접 통신하지 않으며, 대신 historical 노드의 로드 큐 경로에 새로운 세그먼트에 대한 임시 정보를 저장한다. 이 요청이 표시되면 historical 노드가 세그먼트를 load하고 서비스를 시작한다.
 
 ***Coodinator 관련 더 많은 내용은 <a href="https://druid.apache.org/docs/0.13.0-incubating/design/coordinator.html">링크</a> 참고**
-
