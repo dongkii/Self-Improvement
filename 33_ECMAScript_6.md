@@ -427,12 +427,12 @@ console.log(city); // 'Seoul'
 
 ```js
 const person = {
-    name: 'dgyang'
+    name: 'dgyang',
     links: {
         email: {
-            company: 'dgyang@b2en.com'
+            company: 'dgyang@b2en.com',
             personal: 'ydk0831@gmail.com'
-        }
+        },
         groupware: 'gw.b2en.com'
     },
     info: {
